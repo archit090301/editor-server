@@ -7,17 +7,21 @@ services:
     buildCommand: "npm install"
     startCommand: "npm start"
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 10000
       - key: DB_HOST
-        sync: false
-      - key: DB_USER
-        sync: false
-      - key: DB_PASS
-        sync: false
-      - key: DB_NAME
-        sync: false
-      - key: JWT_SECRET
-        sync: false
+    value: your_db_host
+  - key: DB_USER
+    value: your_db_user
+  - key: DB_PASSWORD
+    value: your_db_password
+  - key: DB_NAME
+    value: your_db_name
+  - key: SESSION_SECRET
+    value: your_session_secret
+  - key: RAPIDAPI_KEY
+    value: your_rapidapi_key
+  - key: EMAIL_USER
+    value: your_email
+  - key: EMAIL_PASS
+    value: your_email_password
+  - key: BASE_CLIENT_URL
+    value: your_client_url
