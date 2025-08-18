@@ -14,8 +14,8 @@ module.exports = session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
-    maxAge: 24 * 60 * 60 * 1000
+    secure: process.env.NODE_ENV === 'production', // use true on Render (HTTPS)
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // allows cross-site cookies
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 });
