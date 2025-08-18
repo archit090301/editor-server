@@ -46,35 +46,25 @@ app.get('/', (req, res) => {
   res.send('Server is running!');
 });
 
-// ===== DEBUG LOGIN ROUTE =====
-app.post('/api/login-debug', async (req, res) => {
+app.post('/login', (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password required' });
-  }
-
   db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-    if (err) return res.status(500).json({ message: 'DB error', error: err });
-
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'User not found in DB' });
-    }
+    if (err) return res.status(500).json({ message: 'DB error' });
+    if (results.length === 0) return res.status(401).json({ message: 'Invalid credentials' });
 
     const user = results[0];
-    
-    console.log('DB user record:', user);
-    console.log('Entered password:', password);
-
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log('Password match?', isMatch);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Password does not match DB hash' });
-    }
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role
+    };
 
     res.json({
-      message: 'Debug login successful!',
+      message: 'Login successful',
       user: {
         id: user.id,
         email: user.email,
@@ -84,6 +74,7 @@ app.post('/api/login-debug', async (req, res) => {
     });
   });
 });
+
 
 // Socket.IO
 const io = new Server(server, {
