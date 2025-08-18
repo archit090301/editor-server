@@ -1,9 +1,10 @@
-// index.js
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const { Server } = require('socket.io');
+const bcrypt = require('bcrypt');
+const db = require('./config/db'); // your MySQL connection
 
 dotenv.config();
 const app = express();
@@ -11,8 +12,8 @@ const server = http.createServer(app);
 
 // Allowed origins
 const allowedOrigins = [
-  'http://localhost:5173',          // local dev
-  'https://editior.vercel.app'      // deployed frontend
+  'http://localhost:5173',          
+  'https://editior.vercel.app'      
 ];
 
 // Middleware
@@ -29,7 +30,7 @@ app.use(cors({
 }));
 
 // Session middleware
-app.use(require('./config/session')); // ensure cookie: { secure: true, sameSite: 'none' } in production
+app.use(require('./config/session'));
 
 // Routes
 app.use('/api/admin', require('./routes/admin'));
@@ -38,8 +39,49 @@ app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/passwordReset'));
 app.use('/api', require('./routes/codeExec'));
 app.use('/api', require('./routes/projects'));
+
+// Root route
 app.get('/', (req, res) => {
   res.send('Server is running!');
+});
+
+// ===== DEBUG LOGIN ROUTE =====
+app.post('/api/login-debug', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password required' });
+  }
+
+  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+    if (err) return res.status(500).json({ message: 'DB error', error: err });
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found in DB' });
+    }
+
+    const user = results[0];
+    
+    console.log('DB user record:', user);
+    console.log('Entered password:', password);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match?', isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Password does not match DB hash' });
+    }
+
+    res.json({
+      message: 'Debug login successful!',
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role
+      }
+    });
+  });
 });
 
 // Socket.IO
