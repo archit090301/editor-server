@@ -38,6 +38,9 @@ app.use('/api', require('./routes/users'));
 app.use('/api', require('./routes/passwordReset'));
 app.use('/api', require('./routes/codeExec'));
 app.use('/api', require('./routes/projects'));
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
 
 // Socket.IO
 const io = new Server(server, {
