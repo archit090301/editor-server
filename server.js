@@ -8,6 +8,7 @@ const db = require('./config/db'); // your MySQL connection
 
 dotenv.config();
 const app = express();
+app.use(express.json());
 const server = http.createServer(app);
 
 // Allowed origins
