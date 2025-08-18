@@ -10,7 +10,10 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://editior.vercel.app'], // allow local dev + Vercel frontend
+  credentials: true
+}));
 app.use(require('./config/session'));
 
 // Routes (keep same route paths as original)
@@ -21,8 +24,14 @@ app.use('/api', require('./routes/passwordReset'));
 app.use('/api', require('./routes/codeExec'));
 app.use('/api', require('./routes/projects'));
 
-// Socket
-const io = new Server(server, { cors: { origin: 'http://localhost:5173', methods: ['GET','POST'] } });
+// Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'https://editior.vercel.app'],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 require('./socket/collaboration')(io);
 
 // Start server
