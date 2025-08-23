@@ -13,10 +13,10 @@ const server = http.createServer(app);
 
 // Allowed origins
 const allowedOrigins = [
-  'http://localhost:5173',          
-  'https://editior.vercel.app',
-  'https://editor-haov.vercel.app/'      
+  'http://localhost:5173',
+  'https://editor-haov.vercel.app'
 ];
+
 
 // Middleware
 app.use(express.json());
