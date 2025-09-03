@@ -21,13 +21,7 @@ const allowedOrigins = [
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -76,18 +70,11 @@ app.post('/login', (req, res) => {
   });
 });
 
-
 // Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET','POST'],
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
     credentials: true
   },
   transports: ['websocket', 'polling']
