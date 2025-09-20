@@ -69,8 +69,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",   
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: true,      // Always true in production since you're on HTTPS
+    sameSite: 'none',  // Required for cross-site cookies
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
